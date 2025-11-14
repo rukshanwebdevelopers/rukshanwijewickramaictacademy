@@ -3,6 +3,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
 from authentication.models import User
+from core.permissions.base import ROLE
 from core.serializers.base import BaseSerializer
 
 
@@ -42,3 +43,19 @@ class UserLiteSerializer(BaseSerializer):
         model = User
         fields = ['username', 'mobile_number', 'email', 'first_name', 'last_name']
 
+
+class UserCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password', 'first_name', 'last_name', 'mobile_number']
+        extra_kwargs = {
+            'password': {'write_only': True}
+        }
+
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        user = User(**validated_data)
+        user.role = ROLE.STUDENT.value
+        user.set_password(password)
+        user.save()
+        return user

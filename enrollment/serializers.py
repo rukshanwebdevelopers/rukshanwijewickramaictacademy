@@ -1,5 +1,4 @@
 from core.serializers.base import BaseSerializer
-from course.models import Course
 from enrollment.models import Enrollment
 
 

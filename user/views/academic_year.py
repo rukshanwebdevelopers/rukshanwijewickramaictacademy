@@ -1,25 +1,21 @@
-from core.permissions.base import allow_permission, ROLE
 from core.views.base import BaseViewSet
-from subject.models import Subject
-from subject.serializers import SubjectListSerializer
+from user.models import AcademicYear
+from user.serializers import AcademicYearListSerializer
 
 
 # Create your views here.
-class SubjectViewSet(BaseViewSet):
-    model = Subject
-    serializer_class = SubjectListSerializer
+class AcademicYearViewSet(BaseViewSet):
+    model = AcademicYear
+    serializer_class = AcademicYearListSerializer
 
-    search_fields = ["name", "slug"]
+    search_fields = ["name"]
     filterset_fields = []
-
-    lookup_field = "slug"
 
     def get_queryset(self):
         return (
             self.filter_queryset(super().get_queryset())
         )
 
-    @allow_permission([ROLE.ADMIN])
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
 
@@ -29,14 +25,11 @@ class SubjectViewSet(BaseViewSet):
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
 
-    @allow_permission([ROLE.ADMIN])
     def update(self, request, *args, **kwargs):
-        return super().update(request, *args, **kwargs)
+        return super().retrieve(request, *args, **kwargs)
 
-    @allow_permission([ROLE.ADMIN])
     def partial_update(self, request, *args, **kwargs):
         return super().partial_update(request, *args, **kwargs)
 
-    @allow_permission([ROLE.ADMIN])
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)

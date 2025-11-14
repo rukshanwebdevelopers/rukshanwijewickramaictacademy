@@ -1,5 +1,3 @@
-import random
-import string
 import uuid
 
 from django.contrib.auth.base_user import AbstractBaseUser
@@ -58,19 +56,19 @@ class User(AbstractBaseUser, PermissionsMixin):
         return f"{self.username} <{self.email}>"
 
     def save(self, *args, **kwargs):
-        self.email = self.email.lower().strip()
+        self.email = self.email.lower().strip() if self.email else None
         self.mobile_number = self.mobile_number
 
         # if self.token_updated_at is not None:
         #     self.token = uuid.uuid4().hex + uuid.uuid4().hex
         #     self.token_updated_at = timezone.now()
 
-        if not self.display_name:
-            self.display_name = (
-                self.email.split("@")[0]
-                if len(self.email.split("@"))
-                else "".join(random.choice(string.ascii_letters) for _ in range(6))
-            )
+        # if not self.display_name:
+        #     self.display_name = (
+        #         self.email.split("@")[0]
+        #         if len(self.email.split("@"))
+        #         else "".join(random.choice(string.ascii_letters) for _ in range(6))
+        #     )
 
         if self.is_superuser:
             self.is_staff = True
