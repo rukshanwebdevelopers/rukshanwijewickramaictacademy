@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from authentication.models import User
-from authentication.serializers import UserCreateSerializer
+from authentication.serializers import UserCreateSerializer, UserLiteSerializer
 from user.models import Student, GradeLevel, AcademicYear
 
 
@@ -51,9 +51,11 @@ class StudentSerializer(serializers.ModelSerializer):
 
 
 class StudentListSerializer(serializers.ModelSerializer):
+    user = UserLiteSerializer()
+
     class Meta:
-        model = User
-        fields = ['id', 'username', 'mobile_number', 'email', 'display_name', 'first_name', 'last_name', 'is_active']
+        model = Student
+        fields = ['id', 'student_number', 'date_of_birth', 'gender', 'user']
 
 
 class UserListSerializer(serializers.ModelSerializer):
