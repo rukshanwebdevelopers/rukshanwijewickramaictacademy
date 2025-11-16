@@ -11,7 +11,7 @@ class StudentViewSet(BaseViewSet):
     model = Student
     serializer_class = StudentListSerializer
 
-    search_fields = ["student_number"]
+    search_fields = ['user__email', 'user__first_name', 'user__last_name']
 
     def get_queryset(self):
         return (
