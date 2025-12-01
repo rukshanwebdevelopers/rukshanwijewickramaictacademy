@@ -22,25 +22,26 @@ class CourseViewSet(BaseViewSet):
             self.filter_queryset(super().get_queryset())
         )
 
-    @allow_permission([ROLE.ADMIN])
-    def create(self, request, *args, **kwargs):
-        serializer = CourseSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        course = serializer.save()
-
-        output = CourseListSerializer(course, context={"request": request}).data
-        return Response(output, status=status.HTTP_201_CREATED)
-
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
     def retrieve(self, request, *args, **kwargs):
-        return super().retrieve(request, *args, **kwargs)
+        slug = kwargs.get("slug")
+        course = self.get_queryset().filter(slug=slug).first()
+
+        if not course:
+            return Response({"detail": "Course not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = CourseSerializer(course)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @allow_permission([ROLE.ADMIN])
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
 
     @allow_permission([ROLE.ADMIN])
     def update(self, request, *args, **kwargs):
-        return super().retrieve(request, *args, **kwargs)
+        return super().update(request, *args, **kwargs)
 
     @allow_permission([ROLE.ADMIN])
     def partial_update(self, request, *args, **kwargs):
