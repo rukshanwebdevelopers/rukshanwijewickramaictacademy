@@ -1,8 +1,8 @@
 from django.db import models
 
-from authentication.models import User
 from core.models.base import BaseModel
 from subject.models import Subject
+from user.models import Teacher
 
 
 # Create your models here.
@@ -18,7 +18,7 @@ class Course(BaseModel):
         on_delete=models.CASCADE
     )
     teacher = models.ForeignKey(
-        User,
+        Teacher,
         related_name="courses",
         on_delete=models.CASCADE
     )
