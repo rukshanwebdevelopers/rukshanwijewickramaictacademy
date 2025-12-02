@@ -4,7 +4,7 @@ from rest_framework.routers import DefaultRouter
 from user.views.academic_year import AcademicYearViewSet
 from user.views.admin import AdminViewSet
 from user.views.grade_level import GradeLevelViewSet
-from user.views.student import StudentViewSet
+from user.views.student import StudentViewSet, StudentEnrolledCoursesEndpoint
 from user.views.teacher import TeacherViewSet
 from user.views.user import UserViewSet
 
@@ -45,6 +45,11 @@ urlpatterns = [
             "delete": "destroy",
         }),
         name="student",
+    ),
+    path(
+        "students/<uuid:pk>/enrolled-courses/",
+        StudentEnrolledCoursesEndpoint.as_view(),
+        name="student-enrolled-courses",
     ),
     path(
         "users/",

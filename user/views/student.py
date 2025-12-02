@@ -2,7 +2,9 @@ from rest_framework import status
 from rest_framework.response import Response
 
 from core.permissions.base import ROLE, allow_permission
-from core.views.base import BaseViewSet
+from core.views.base import BaseViewSet, BaseAPIView
+from course.models import Course
+from course.serializers import CourseListSerializer
 from user.models import Student
 from user.serializers import StudentListSerializer, StudentCreateSerializer, StudentUpdateSerializer
 
@@ -47,3 +49,14 @@ class StudentViewSet(BaseViewSet):
     @allow_permission([ROLE.ADMIN])
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
+
+
+class StudentEnrolledCoursesEndpoint(BaseAPIView):
+    def get(self, request, pk):
+        student = Student.objects.get(pk=pk)
+
+        # Get all courses the student is enrolled in
+        courses = Course.objects.filter(enrollments__student=student)
+
+        output = CourseListSerializer(courses, many=True).data
+        return Response(output, status=status.HTTP_200_OK)
