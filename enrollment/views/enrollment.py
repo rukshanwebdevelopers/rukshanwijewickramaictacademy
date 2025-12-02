@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.response import Response
 
 from core.views.base import BaseViewSet
-from enrollment.models import Enrollment
+from enrollment.models import Enrollment, EnrollmentPayment, EnrollmentStatusType
 from enrollment.serializers import EnrollmentListSerializer, EnrollmentSerializer
 
 
@@ -19,6 +19,12 @@ class EnrollmentViewSet(BaseViewSet):
         return (
             self.filter_queryset(super().get_queryset())
         )
+
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
 
     def create(self, request, *args, **kwargs):
         try:
@@ -49,14 +55,29 @@ class EnrollmentViewSet(BaseViewSet):
                     status=status.HTTP_409_CONFLICT,
                 )
 
-    def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
-
-    def retrieve(self, request, *args, **kwargs):
-        return super().retrieve(request, *args, **kwargs)
-
     def update(self, request, *args, **kwargs):
-        return super().retrieve(request, *args, **kwargs)
+        # Get enrollment instance being updated
+        enrollment = self.get_object()
+
+        # Get the latest payment for this enrollment
+        latest_payment = (
+            EnrollmentPayment.objects
+            .filter(enrollment=enrollment)
+            .order_by("-payment_year", "-payment_month")
+            .first()
+        )
+
+        # If a payment exists, update the enrollment fields
+        if latest_payment:
+            enrollment.last_payment_month = latest_payment.payment_month
+            enrollment.last_payment_year = latest_payment.payment_year
+
+            # Business rule: If paid → set ACTIVE
+            enrollment.status = EnrollmentStatusType.ACTIVE
+            enrollment.save()
+
+        data = EnrollmentListSerializer(enrollment).data
+        return Response(data, status.HTTP_200_OK)
 
     def partial_update(self, request, *args, **kwargs):
         return super().partial_update(request, *args, **kwargs)
