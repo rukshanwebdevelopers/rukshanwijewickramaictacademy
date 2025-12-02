@@ -1,11 +1,10 @@
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from rest_framework import status
 from rest_framework.response import Response
 
 from core.views.base import BaseViewSet
-from enrollment.models import Enrollment, EnrollmentPayment
-from enrollment.serializers import EnrollmentPaymentListSerializer, EnrollmentPaymentSerializer, \
-    EnrollmentPaymentCreateSerializer
+from enrollment.models import Enrollment, EnrollmentPayment, EnrollmentStatusType
+from enrollment.serializers import EnrollmentPaymentListSerializer, EnrollmentPaymentCreateSerializer
 
 
 # Create your views here.
@@ -22,10 +21,21 @@ class EnrollmentPaymentViewSet(BaseViewSet):
         )
 
     def create(self, request, *args, **kwargs):
-        serializer = EnrollmentPaymentCreateSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        instance = serializer.save()
-        return Response(EnrollmentPaymentListSerializer(instance).data, status=201)
+        with transaction.atomic():
+            serializer = EnrollmentPaymentCreateSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            enrollment_payment = serializer.save()
+
+            enrollment = enrollment_payment.enrollment
+
+            enrollment.last_payment_month = enrollment_payment.payment_month
+            enrollment.last_payment_year = enrollment_payment.payment_year
+            enrollment.status = EnrollmentStatusType.ACTIVE
+
+            enrollment.save()
+
+            return Response(EnrollmentPaymentListSerializer(enrollment_payment).data, status=201)
+
 
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
