@@ -60,11 +60,28 @@ class EnrollmentPaymentCreateSerializer(BaseSerializer):
         # save enrollment into serializer instance
         attrs["enrollment"] = enrollment
 
+        # --- NEW DATE VALIDATION ---
+        current = timezone.now().date()
+        current_month = current.month
+        current_year = current.year
+
+        pay_month = attrs["payment_month"]
+        pay_year = attrs["payment_year"]
+
+        # Convert both to comparable "year * 12 + month"
+        current_value = current_year * 12 + current_month
+        pay_value = pay_year * 12 + pay_month
+
+        if pay_value < current_value:
+            raise serializers.ValidationError(
+                {"payment_month": "Payment month/year cannot be in the past."}
+            )
+
         # Check duplicate payment
         if EnrollmentPayment.objects.filter(
-            enrollment=enrollment,
-            payment_month=attrs["payment_month"],
-            payment_year=attrs["payment_year"],
+                enrollment=enrollment,
+                payment_month=attrs["payment_month"],
+                payment_year=attrs["payment_year"],
         ).exists():
             raise serializers.ValidationError(
                 {"payment_month": "Already paid for this course"}
