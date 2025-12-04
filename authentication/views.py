@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate
+from django.core.serializers import serialize
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -6,9 +7,10 @@ from rest_framework.status import HTTP_200_OK
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from authentication.serializers import SignupSerializer, SigninSerializer, UserLiteSerializer
+from authentication.serializers import SignupSerializer, SigninSerializer, UserLiteSerializer, ChangePasswordSerializer
 from core.permissions.base import ROLE
 from core.permissions.permissions import IsAdminOrReadOnly
+from core.views.base import BaseAPIView
 
 
 # Create your views here.
@@ -90,3 +92,20 @@ class LogoutView(APIView):
 
     def post(self, request):
         return Response(status=HTTP_200_OK)
+
+
+class ChangePasswordEndpoint(BaseAPIView):
+    def post(self, request):
+        serializer = ChangePasswordSerializer(
+            data=request.data,
+            context={'request': request}
+        )
+        serializer.is_valid(raise_exception=True)
+
+        user = request.user
+        new_password = serializer.validated_data['new_password']
+
+        user.set_password(new_password)
+        user.save()
+
+        return Response(status=status.HTTP_200_OK)

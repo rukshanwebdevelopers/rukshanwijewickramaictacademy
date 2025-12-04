@@ -26,7 +26,6 @@ class SignupSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = User.objects.create_user(
             email=validated_data['email'],
-            username=validated_data['username'],
             password=validated_data['password']
         )
         return user
@@ -38,10 +37,9 @@ class SigninSerializer(serializers.Serializer):
 
 
 class UserLiteSerializer(BaseSerializer):
-
     class Meta:
         model = User
-        fields = ['username', 'mobile_number', 'email', 'first_name', 'last_name']
+        fields = ['id', 'username', 'display_name', 'mobile_number', 'email', 'first_name', 'last_name']
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
@@ -59,3 +57,19 @@ class UserCreateSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
         return user
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    new_password = serializers.CharField(write_only=True)
+    old_password = serializers.CharField(write_only=True)
+
+    def validate_old_password(self, value):
+        user = self.context['request'].user
+        if not user.check_password(value):
+            raise serializers.ValidationError("Old password is incorrect.")
+        return value
+
+    def validate_new_password(self, value):
+        from django.contrib.auth.password_validation import validate_password
+        validate_password(value)  # uses Django validators
+        return value
