@@ -53,15 +53,15 @@ class Student(BaseModel):
                                             related_name='current_students')
 
     # Student personal information
-    date_of_birth = models.DateField()
+    date_of_birth = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=10, choices=(
         ('male', 'Male'),
         ('female', 'Female'),
     ), blank=True, null=True)
 
     # Contact information
-    parent_guardian_name = models.CharField(max_length=100)
-    parent_guardian_phone = models.CharField(max_length=15)
+    parent_guardian_name = models.CharField(max_length=100, blank=True, null=True)
+    parent_guardian_phone = models.CharField(max_length=15, blank=True, null=True)
     parent_guardian_email = models.EmailField(blank=True, null=True)
     emergency_contact_name = models.CharField(max_length=100, blank=True, null=True)
     emergency_contact_phone = models.CharField(max_length=15, blank=True, null=True)

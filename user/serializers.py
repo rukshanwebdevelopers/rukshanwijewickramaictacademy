@@ -23,7 +23,7 @@ class TeacherListSerializer(serializers.ModelSerializer):
 class StudentCreateSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(write_only=True, required=False)
     last_name = serializers.CharField(write_only=True, required=False)
-    username = serializers.CharField(write_only=True)
+    username = serializers.CharField(write_only=True, required=False)
     email = serializers.EmailField(write_only=True)
     password = serializers.CharField(write_only=True)
 
@@ -33,10 +33,10 @@ class StudentCreateSerializer(serializers.ModelSerializer):
         read_only_fields = ["student_number", "user"]
 
     # --- VALIDATION ---
-    def validate_username(self, value):
-        if User.objects.filter(username=value).exists():
-            raise serializers.ValidationError("Username already exists.")
-        return value
+    # def validate_username(self, value):
+    #     if User.objects.filter(username=value).exists():
+    #         raise serializers.ValidationError("Username already exists.")
+    #     return value
 
     def validate_email(self, value):
         if User.objects.filter(email=value).exists():
@@ -48,7 +48,7 @@ class StudentCreateSerializer(serializers.ModelSerializer):
         # Extract fields NOT in Student model
         first_name = validated_data.pop("first_name")
         last_name = validated_data.pop("last_name")
-        username = validated_data.pop("username")
+        username = validated_data.pop("username", None)
         email = validated_data.pop("email")
         password = validated_data.pop("password")
 
