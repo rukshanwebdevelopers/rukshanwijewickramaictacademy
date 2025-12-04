@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'course',
     'enrollment',
     'user',
+    'analytics',
 ]
 
 INSTALLED_APPS += ["django_celery_results"]
