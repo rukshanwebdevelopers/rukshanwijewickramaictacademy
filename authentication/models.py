@@ -1,6 +1,6 @@
 import uuid
 
-from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin, UserManager
 from django.db import models
 
@@ -8,14 +8,38 @@ from core.permissions.base import ROLE
 
 
 # Create your models here.
+class CustomUserManager(BaseUserManager):
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError("Users must have an email address")
+
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+
+        if extra_fields.get("is_staff") is not True:
+            raise ValueError("Superuser must have is_staff=True.")
+        if extra_fields.get("is_superuser") is not True:
+            raise ValueError("Superuser must have is_superuser=True.")
+
+        return self.create_user(email, password, **extra_fields)
+
+
 class User(AbstractBaseUser, PermissionsMixin):
     id = models.UUIDField(
         default=uuid.uuid4, unique=True, editable=False, db_index=True, primary_key=True
     )
-    username = models.CharField(max_length=128, unique=True)
+    username = models.CharField(max_length=128, blank=True, null=True)
     # user fields
     mobile_number = models.CharField(max_length=255, blank=True, null=True)
     email = models.CharField(max_length=255, null=True, blank=True, unique=True)
+    # notification_email = models.CharField(max_length=255, null=True, blank=True, unique=True)
 
     # identity
     display_name = models.CharField(max_length=255, default="")
@@ -42,9 +66,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["username"]
+    REQUIRED_FIELDS = []
 
-    objects = UserManager()
+    objects = CustomUserManager()
 
     class Meta:
         verbose_name = "User"
