@@ -1,3 +1,6 @@
+from rest_framework import status
+from rest_framework.response import Response
+
 from authentication.models import User
 from core.permissions.base import ROLE, allow_permission
 from core.views.base import BaseViewSet
@@ -21,3 +24,14 @@ class UserViewSet(BaseViewSet):
     @allow_permission([ROLE.ADMIN])
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
+
+    @allow_permission([ROLE.ADMIN])
+    def deactivate(self, request, *args, **kwargs):
+        deactivate_user_id = request.get('id')
+        user = User.objects.get(id=deactivate_user_id)
+
+        # Deactivate the user
+        user.is_active = False
+        user.save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
