@@ -5,6 +5,8 @@ from core.permissions.base import ROLE, allow_permission
 from core.views.base import BaseViewSet, BaseAPIView
 from course.models import Course
 from course.serializers import CourseListSerializer
+from enrollment.models import Enrollment
+from enrollment.serializers import EnrollmentListSerializer
 from user.models import Student
 from user.serializers import StudentListSerializer, StudentCreateSerializer, StudentUpdateSerializer
 
@@ -59,4 +61,17 @@ class StudentEnrolledCoursesEndpoint(BaseAPIView):
         courses = Course.objects.filter(enrollments__student=student)
 
         output = CourseListSerializer(courses, many=True).data
+        return Response(output, status=status.HTTP_200_OK)
+
+
+class StudentMeEnrollmentsEndpoint(BaseAPIView):
+    def get(self, request):
+        user = request.user
+
+        student = Student.objects.get(user=user)
+
+        # Get all courses the student is enrolled in
+        enrollments = Enrollment.objects.filter(student=student)
+
+        output = EnrollmentListSerializer(enrollments, many=True).data
         return Response(output, status=status.HTTP_200_OK)
