@@ -1,5 +1,4 @@
 from django.contrib.auth import authenticate
-from django.core.serializers import serialize
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -54,10 +53,11 @@ class SigninView(APIView):
             )
 
         tokens = get_tokens_for_user(user)
+        permission = 'super_admin' if user.role == ROLE.ADMIN.value else 'student'
         return Response({
             'tokens': tokens,
-            'permissions': ['super_admin'],
-            'role': 'super_admin'
+            'permissions': [permission],
+            'role': permission
         }, status=status.HTTP_200_OK
         )
 
