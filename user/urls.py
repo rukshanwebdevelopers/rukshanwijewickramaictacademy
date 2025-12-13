@@ -67,6 +67,11 @@ urlpatterns = [
         name="user",
     ),
     path(
+        "users/block-user",
+        UserViewSet.as_view({"get": "list", "post": "create"}),
+        name="user",
+    ),
+    path(
         "academicYears/",
         AcademicYearViewSet.as_view({"get": "list", "post": "create"}),
         name="academicYear",
