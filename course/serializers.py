@@ -1,3 +1,5 @@
+from rest_framework import serializers
+
 from core.serializers.base import BaseSerializer
 from course.models import Course
 from subject.serializers import SubjectListSerializer
@@ -16,4 +18,13 @@ class CourseSerializer(BaseSerializer):
 class CourseListSerializer(BaseSerializer):
     class Meta:
         model = Course
-        fields = '__all__'
+        fields = (
+            "id",
+            "name",
+            "code",
+            "slug",
+            "fee",
+            "batch",
+            "subject",
+            "teacher",
+        )
