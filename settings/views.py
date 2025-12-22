@@ -69,7 +69,7 @@ class SettingsViewSet(BaseAPIView):
                 "useOtp": False,
                 "currency": "USD",
                 "taxClass": "1",
-                "siteTitle": "Hotels",
+                "siteTitle": "Pickbazar",
                 "freeShipping": False,
                 "signupPoints": 100,
                 "siteSubtitle": "Your next ecommerce",
