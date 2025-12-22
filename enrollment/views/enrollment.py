@@ -4,7 +4,7 @@ from rest_framework.response import Response
 
 from core.views.base import BaseViewSet
 from enrollment.models import Enrollment, EnrollmentPayment, EnrollmentStatusType
-from enrollment.serializers import EnrollmentListSerializer, EnrollmentSerializer
+from enrollment.serializers import EnrollmentListSerializer, EnrollmentSerializer, EnrollmentWithPaymentMonthsSerializer
 
 
 # Create your views here.
@@ -21,7 +21,23 @@ class EnrollmentViewSet(BaseViewSet):
         )
 
     def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
+        queryset = self.filter_queryset(
+            Enrollment.objects
+            .select_related("student", "course")
+            .prefetch_related("enrollment_payments")
+        )
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = EnrollmentWithPaymentMonthsSerializer(
+                page, many=True, context={"request": request}
+            )
+            return self.get_paginated_response(serializer.data)
+
+        serializer = EnrollmentWithPaymentMonthsSerializer(
+            queryset, many=True, context={"request": request}
+        )
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
