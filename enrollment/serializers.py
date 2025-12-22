@@ -1,3 +1,5 @@
+import calendar
+
 from django.utils import timezone
 from rest_framework import serializers
 
@@ -26,6 +28,51 @@ class EnrollmentListSerializer(BaseSerializer):
     class Meta:
         model = Enrollment
         fields = '__all__'
+
+
+class EnrollmentWithPaymentMonthsSerializer(BaseSerializer):
+    student = StudentListSerializer()
+    course = CourseListSerializer()
+    months = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Enrollment
+        fields = '__all__'
+
+    def get_months(self, enrollment):
+        """
+        Returns:
+        {
+          jan: { paid: True, amount: 120 },
+          feb: { paid: False },
+          ...
+        }
+        """
+
+        # Fetch payments once (important for performance)
+        payments = enrollment.enrollment_payments.all()
+
+        # Map payments by month number (1–12)
+        payment_map = {
+            p.payment_month: p
+            for p in payments
+            if p.payment_year == enrollment.last_payment_year
+        }
+
+        months = {}
+
+        for month in range(1, 13):
+            month_key = calendar.month_abbr[month].lower()  # jan, feb, ...
+
+            payment = payment_map.get(month)
+
+            months[month_key] = {
+                "paid": payment is not None,
+                "amount": payment.amount if payment else None,
+                "payment_date": payment.payment_date if payment else None,
+            }
+
+        return months
 
 
 class EnrollmentPaymentSerializer(BaseSerializer):
