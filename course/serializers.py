@@ -1,7 +1,5 @@
-from rest_framework import serializers
-
 from core.serializers.base import BaseSerializer
-from course.models import Course
+from course.models import Course, CourseOffering
 from subject.serializers import SubjectListSerializer
 from user.serializers import TeacherListSerializer
 
@@ -23,8 +21,21 @@ class CourseListSerializer(BaseSerializer):
             "name",
             "code",
             "slug",
-            "fee",
-            "batch",
             "subject",
-            "teacher",
         )
+
+
+class CourseOfferingSerializer(BaseSerializer):
+    class Meta:
+        model = CourseOffering
+        fields = '__all__'
+
+
+class CourseOfferingListSerializer(BaseSerializer):
+    course = CourseListSerializer()
+    teacher = TeacherListSerializer()
+
+    class Meta:
+        model = CourseOffering
+        fields = '__all__'
+        exclude_fields = ['created_at', 'created_by', 'updated_by', 'updated_at', 'deleted_at']
