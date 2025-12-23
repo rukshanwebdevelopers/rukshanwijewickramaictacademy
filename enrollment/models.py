@@ -1,7 +1,7 @@
 from django.db import models
 
 from core.models.base import BaseModel
-from course.models import Course
+from course.models import CourseOffering
 from user.models import Student
 
 
@@ -22,8 +22,8 @@ class Enrollment(BaseModel):
         related_name="enrollments",
         on_delete=models.CASCADE
     )
-    course = models.ForeignKey(
-        Course,
+    course_offering = models.ForeignKey(
+        CourseOffering,
         related_name="enrollments",
         on_delete=models.CASCADE
     )
