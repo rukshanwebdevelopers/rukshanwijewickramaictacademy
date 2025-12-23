@@ -37,5 +37,5 @@ class CourseOfferingListSerializer(BaseSerializer):
 
     class Meta:
         model = CourseOffering
-        fields = '__all__'
-        exclude_fields = ['created_at', 'created_by', 'updated_by', 'updated_at', 'deleted_at']
+        fields = ['id', 'course', 'teacher', 'fee', 'year', 'batch', 'grade_level']
+        # exclude_fields = ['created_at', 'created_by', 'updated_by', 'updated_at', 'deleted_at']
