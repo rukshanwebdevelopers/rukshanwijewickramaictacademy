@@ -23,7 +23,7 @@ class EnrollmentViewSet(BaseViewSet):
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(
             Enrollment.objects
-            .select_related("student", "course")
+            .select_related("student", "course_offering")
             .prefetch_related("enrollment_payments")
         )
 
@@ -46,7 +46,7 @@ class EnrollmentViewSet(BaseViewSet):
         try:
             enrollment = Enrollment.objects.filter(
                 student=request.data.get("student"),
-                course=request.data.get("course"),
+                course_offering=request.data.get("course_offering"),
             ).first()
 
             if enrollment:
