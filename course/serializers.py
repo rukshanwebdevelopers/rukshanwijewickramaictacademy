@@ -1,7 +1,7 @@
 from core.serializers.base import BaseSerializer
 from course.models import Course, CourseOffering
 from subject.serializers import SubjectListSerializer
-from user.serializers import TeacherListSerializer
+from user.serializers import TeacherListSerializer, GradeLevelListSerializer
 
 
 class CourseSerializer(BaseSerializer):
@@ -34,8 +34,16 @@ class CourseOfferingSerializer(BaseSerializer):
 class CourseOfferingListSerializer(BaseSerializer):
     course = CourseListSerializer()
     teacher = TeacherListSerializer()
+    grade_level = GradeLevelListSerializer()
 
     class Meta:
         model = CourseOffering
-        fields = ['id', 'course', 'teacher', 'fee', 'year', 'batch', 'grade_level']
-        # exclude_fields = ['created_at', 'created_by', 'updated_by', 'updated_at', 'deleted_at']
+        fields = [
+            'id',
+            'course',
+            'teacher',
+            'fee',
+            'year',
+            'batch',
+            'grade_level'
+        ]
