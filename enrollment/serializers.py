@@ -4,7 +4,7 @@ from django.utils import timezone
 from rest_framework import serializers
 
 from core.serializers.base import BaseSerializer
-from course.serializers import CourseListSerializer
+from course.serializers import CourseOfferingListSerializer
 from enrollment.models import Enrollment, EnrollmentStatusType, EnrollmentPayment
 from user.serializers import StudentListSerializer
 
@@ -23,21 +23,34 @@ class EnrollmentSerializer(BaseSerializer):
 
 class EnrollmentListSerializer(BaseSerializer):
     student = StudentListSerializer()
-    course = CourseListSerializer()
+    course_offering = CourseOfferingListSerializer()
 
     class Meta:
         model = Enrollment
-        fields = '__all__'
+        fields = [
+            'id',
+            'status',
+            'last_payment_month',
+            'last_payment_year',
+            'is_active',
+            'student',
+            'course_offering',
+        ]
 
 
 class EnrollmentWithPaymentMonthsSerializer(BaseSerializer):
     student = StudentListSerializer()
-    course = CourseListSerializer()
+    course_offering = CourseOfferingListSerializer()
     months = serializers.SerializerMethodField()
 
     class Meta:
         model = Enrollment
-        fields = '__all__'
+        fields = [
+            'id',
+            'course_offering',
+            'student',
+            'months',
+        ]
 
     def get_months(self, enrollment):
         """
@@ -83,7 +96,7 @@ class EnrollmentPaymentSerializer(BaseSerializer):
 
 class EnrollmentPaymentCreateSerializer(BaseSerializer):
     student = serializers.UUIDField(write_only=True)
-    course = serializers.UUIDField(write_only=True)
+    course_offering = serializers.UUIDField(write_only=True)
 
     class Meta:
         model = EnrollmentPayment
@@ -92,11 +105,11 @@ class EnrollmentPaymentCreateSerializer(BaseSerializer):
 
     def validate(self, attrs):
         student = attrs.get("student")
-        course = attrs.get("course")
+        course_offering = attrs.get("course_offering")
 
         enrollment = Enrollment.objects.filter(
             student=student,
-            course=course,
+            course_offering=course_offering,
         ).first()
 
         if not enrollment:
@@ -138,7 +151,7 @@ class EnrollmentPaymentCreateSerializer(BaseSerializer):
 
     def create(self, validated_data):
         validated_data.pop("student", None)
-        validated_data.pop("course", None)
+        validated_data.pop("course_offering", None)
 
         # automatic payment date
         validated_data["payment_date"] = timezone.now().date()
@@ -151,4 +164,11 @@ class EnrollmentPaymentListSerializer(BaseSerializer):
 
     class Meta:
         model = EnrollmentPayment
-        fields = '__all__'
+        fields = [
+            'id',
+            'payment_month',
+            'payment_year',
+            'amount',
+            'payment_date',
+            'enrollment'
+        ]
