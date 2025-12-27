@@ -92,12 +92,12 @@ urlpatterns = [
         name="academicYear",
     ),
     path(
-        "gradeLevel/",
+        "grade-levels/",
         GradeLevelViewSet.as_view({"get": "list", "post": "create"}),
         name="gradeLevel",
     ),
     path(
-        "gradeLevel/<uuid:pk>/",
+        "grade-levels/<uuid:pk>/",
         GradeLevelViewSet.as_view({
             "get": "retrieve",
             "put": "update",
