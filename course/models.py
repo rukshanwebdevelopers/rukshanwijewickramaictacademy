@@ -42,4 +42,4 @@ class CourseOffering(BaseModel):
 
     class Meta:
         db_table = "course_offering"
-        unique_together = ("course", "year", "batch")
+        unique_together = ("course", "grade_level", "year", "batch")
