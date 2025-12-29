@@ -12,7 +12,7 @@ class CourseOfferingViewSet(BaseViewSet):
     model = CourseOffering
     serializer_class = CourseOfferingListSerializer
 
-    search_fields = ["year"]
+    search_fields = ["year", "grade_level__name"]
     filterset_fields = []
 
     def get_queryset(self):
@@ -24,13 +24,14 @@ class CourseOfferingViewSet(BaseViewSet):
         try:
             course_offering = CourseOffering.objects.filter(
                 course=request.data.get("course"),
+                grade_level=request.data.get("grade_level"),
                 year=request.data.get("year"),
                 batch=request.data.get("batch"),
             ).first()
 
             if course_offering:
                 return Response(
-                    {"teacher": "Course Offering already exists."},
+                    {"batch": "Course Offering already exists."},
                     status=status.HTTP_409_CONFLICT,
                 )
             serializer = CourseOfferingSerializer(data=request.data)
