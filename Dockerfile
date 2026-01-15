@@ -1,9 +1,12 @@
-FROM python:3.12
+FROM python:3.12-alpine
 
 WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
 COPY . .
 
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+EXPOSE 8000
 
-CMD ["bash"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

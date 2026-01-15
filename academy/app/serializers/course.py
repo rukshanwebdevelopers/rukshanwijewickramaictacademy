@@ -1,0 +1,50 @@
+from academy.db.models import Course, CourseOffering
+from .base import BaseSerializer
+from .grade_level import GradeLevelListSerializer
+from .subject import SubjectListSerializer
+from .teacher import TeacherListSerializer
+
+
+class CourseListSerializer(BaseSerializer):
+    class Meta:
+        model = Course
+        fields = (
+            "id",
+            "name",
+            "code",
+            "slug",
+            "subject",
+        )
+
+
+class CourseSerializer(BaseSerializer):
+    subject = SubjectListSerializer()
+    teacher = TeacherListSerializer()
+
+    class Meta:
+        model = Course
+        fields = '__all__'
+
+
+class CourseOfferingListSerializer(BaseSerializer):
+    course = CourseListSerializer()
+    teacher = TeacherListSerializer()
+    grade_level = GradeLevelListSerializer()
+
+    class Meta:
+        model = CourseOffering
+        fields = [
+            'id',
+            'course',
+            'teacher',
+            'fee',
+            'year',
+            'batch',
+            'grade_level'
+        ]
+
+
+class CourseOfferingSerializer(BaseSerializer):
+    class Meta:
+        model = CourseOffering
+        fields = '__all__'
