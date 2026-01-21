@@ -2,6 +2,7 @@ from django.db import IntegrityError
 from rest_framework import status
 from rest_framework.response import Response
 
+from academy.app.permissions.base import allow_permission, ROLE
 from academy.app.serializers.enrollment import EnrollmentListSerializer, EnrollmentWithPaymentMonthsSerializer, \
     EnrollmentSerializer
 from academy.app.views.base import BaseViewSet
@@ -110,5 +111,6 @@ class EnrollmentViewSet(BaseViewSet):
     def partial_update(self, request, *args, **kwargs):
         return super().partial_update(request, *args, **kwargs)
 
+    @allow_permission([ROLE.ADMIN])
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
