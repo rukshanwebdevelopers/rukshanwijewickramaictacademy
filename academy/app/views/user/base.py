@@ -27,7 +27,7 @@ class UserViewSet(BaseViewSet):
 
     @allow_permission([ROLE.ADMIN])
     def deactivate(self, request, *args, **kwargs):
-        deactivate_user_id = request.get('id')
+        deactivate_user_id = request.data['id']
         user = User.objects.get(id=deactivate_user_id)
 
         # Deactivate the user

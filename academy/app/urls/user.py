@@ -20,7 +20,7 @@ urlpatterns = [
     ),
     path(
         "users/block-user",
-        UserViewSet.as_view({"get": "list", "post": "create"}),
+        UserViewSet.as_view({"post": "deactivate"}),
         name="user",
     ),
 ]
