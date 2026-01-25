@@ -19,6 +19,7 @@ class TeacherCreateSerializer(serializers.ModelSerializer):
     username = serializers.CharField(write_only=True)
     email = serializers.EmailField(write_only=True)
     password = serializers.CharField(write_only=True)
+    mobile_number = serializers.CharField(write_only=True)
 
     class Meta:
         model = Teacher
@@ -44,6 +45,7 @@ class TeacherCreateSerializer(serializers.ModelSerializer):
         username = validated_data.pop("username")
         email = validated_data.pop("email")
         password = validated_data.pop("password")
+        mobile_number = validated_data.pop("mobile_number")
 
         # Create user
         user = User.objects.create(
@@ -52,6 +54,7 @@ class TeacherCreateSerializer(serializers.ModelSerializer):
             username=username,
             email=email,
             role=ROLE.STUDENT.value,
+            mobile_number=mobile_number,
         )
         user.set_password(password)
         user.save()
