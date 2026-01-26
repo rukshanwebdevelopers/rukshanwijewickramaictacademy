@@ -4,7 +4,7 @@ from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 
-from academy.app.permissions.base import ROLE
+from academy.app.permissions.base import ROLE, ROLE_PERMISSIONS
 
 
 # Create your models here.
@@ -80,8 +80,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         return f"{self.username} <{self.email}>"
 
     @property
-    def role_name(self):
-        return self.get_role_display()
+    def permissions(self) -> list[str]:
+        return ROLE_PERMISSIONS.get(ROLE(self.role), [])
+
+    @property
+    def role_name(self) -> str:
+        return ROLE(self.role).name.lower()
 
     def save(self, *args, **kwargs):
         self.email = self.email.lower().strip() if self.email else None
