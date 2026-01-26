@@ -53,7 +53,7 @@ class TeacherCreateSerializer(serializers.ModelSerializer):
             last_name=last_name,
             username=username,
             email=email,
-            role=ROLE.STUDENT.value,
+            role=ROLE.TEACHER.value,
             mobile_number=mobile_number,
         )
         user.set_password(password)
