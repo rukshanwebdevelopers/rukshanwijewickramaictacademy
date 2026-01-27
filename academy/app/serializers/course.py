@@ -6,6 +6,8 @@ from .teacher import TeacherListSerializer
 
 
 class CourseListSerializer(BaseSerializer):
+    subject = SubjectListSerializer()
+
     class Meta:
         model = Course
         fields = (
