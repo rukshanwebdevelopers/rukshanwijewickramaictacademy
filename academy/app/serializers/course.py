@@ -48,3 +48,8 @@ class CourseOfferingSerializer(BaseSerializer):
     class Meta:
         model = CourseOffering
         fields = '__all__'
+
+    def update(self, instance, validated_data):
+        instance.fee = validated_data.get('fee', instance.fee)
+        instance.save(update_fields=['fee'])
+        return instance

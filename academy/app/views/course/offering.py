@@ -57,7 +57,18 @@ class CourseOfferingViewSet(BaseViewSet):
         return super().retrieve(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
-        return super().retrieve(request, *args, **kwargs)
+        course_offering = CourseOffering.objects.get(pk=kwargs["pk"])
+
+        serializer = CourseOfferingSerializer(
+            course_offering,
+            data=request.data,
+            partial=True
+        )
+        serializer.is_valid(raise_exception=True)
+        course_offering = serializer.save()
+
+        output = CourseOfferingListSerializer(course_offering, context={"request": request}).data
+        return Response(output, status=status.HTTP_200_OK)
 
     def partial_update(self, request, *args, **kwargs):
         return super().partial_update(request, *args, **kwargs)
