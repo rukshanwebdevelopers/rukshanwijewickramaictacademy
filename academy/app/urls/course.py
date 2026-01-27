@@ -25,7 +25,7 @@ urlpatterns = [
         name="course-offering",
     ),
     path(
-        "course-offerings/<str:slug>/",
+        "course-offerings/<uuid:pk>/",
         CourseOfferingViewSet.as_view({
             "get": "retrieve",
             "put": "update",
