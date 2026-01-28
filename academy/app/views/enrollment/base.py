@@ -54,7 +54,7 @@ class EnrollmentViewSet(BaseViewSet):
 
             if enrollment:
                 return Response(
-                    {"course": "The student already enroll to this course."},
+                    {"course_offering": "The student already enroll to this course."},
                     status=status.HTTP_409_CONFLICT,
                 )
 
@@ -63,7 +63,7 @@ class EnrollmentViewSet(BaseViewSet):
 
             if student.current_grade != course_offering.grade_level:
                 return Response(
-                    {"course": "Invalid course assignment."},
+                    {"course_offering": "Invalid course assignment."},
                     status=status.HTTP_409_CONFLICT,
                 )
 
