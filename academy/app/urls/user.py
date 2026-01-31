@@ -1,5 +1,6 @@
 from django.urls import path
 
+from academy.app.views.user.admin import AdminViewSet
 from academy.app.views.user.base import UserViewSet
 
 urlpatterns = [
@@ -22,5 +23,11 @@ urlpatterns = [
         "users/block-user",
         UserViewSet.as_view({"post": "deactivate"}),
         name="user",
+    ),
+
+    path(
+        "admin/list/",
+        AdminViewSet.as_view({"get": "list", "post": "create"}),
+        name="admin",
     ),
 ]
