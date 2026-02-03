@@ -142,3 +142,24 @@ class StudentUpdateSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+
+
+class StudentLiteSerializer(serializers.ModelSerializer):
+    user = UserLiteSerializer()
+    current_grade = GradeLevelListSerializer()
+    current_academic_year = AcademicYearListSerializer()
+
+    class Meta:
+        model = Student
+        fields = [
+            'id',
+            'student_number',
+            'date_of_birth',
+            'gender',
+            'is_active',
+            'user',
+            'current_grade',
+            'current_academic_year',
+            'parent_guardian_name',
+            'parent_guardian_phone'
+        ]
