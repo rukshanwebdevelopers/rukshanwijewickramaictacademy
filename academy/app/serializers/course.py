@@ -55,3 +55,14 @@ class CourseOfferingSerializer(BaseSerializer):
         instance.fee = validated_data.get('fee', instance.fee)
         instance.save(update_fields=['fee'])
         return instance
+
+
+class CourseOfferingLiteSerializer(BaseSerializer):
+    course = CourseListSerializer()
+
+    class Meta:
+        model = CourseOffering
+        fields = [
+            'id',
+            'course',
+        ]
